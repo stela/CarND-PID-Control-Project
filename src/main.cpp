@@ -2,7 +2,7 @@
 #include <iostream>
 #include "json.hpp"
 #include "PID.h"
-#include <math.h>
+#include <cmath>
 
 // for convenience
 using json = nlohmann::json;
@@ -15,10 +15,10 @@ double rad2deg(double x) { return x * 180 / pi(); }
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
 // else the empty string "" will be returned.
-std::string hasData(std::string s) {
+std::string hasData(const std::string &s) {
   auto found_null = s.find("null");
-  auto b1 = s.find_first_of("[");
-  auto b2 = s.find_last_of("]");
+  auto b1 = s.find_first_of('[');
+  auto b2 = s.find_last_of(']');
   if (found_null != std::string::npos) {
     return "";
   }
@@ -39,10 +39,10 @@ int main()
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
-    if (length && length > 2 && data[0] == '4' && data[1] == '2')
+    if (length > 2 && data[0] == '4' && data[1] == '2')
     {
       auto s = hasData(std::string(data).substr(0, length));
-      if (s != "") {
+      if (!s.empty()) {
         auto j = json::parse(s);
         std::string event = j[0].get<std::string>();
         if (event == "telemetry") {
@@ -52,7 +52,7 @@ int main()
           double angle = std::stod(j[1]["steering_angle"].get<std::string>());
           double steer_value;
           /*
-          * TODO: Calcuate steering value here, remember the steering value is
+          * TODO: Calculate steering value here, remember the steering value is
           * [-1, 1].
           * NOTE: Feel free to play around with the throttle and speed. Maybe use
           * another PID controller to control the speed!
