@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/stela/CarND-PID-Control-Project.svg?branch=master)](https://travis-ci.org/stela/CarND-PID-Control-Project)
+
 # CarND-Controls-PID
 Self-Driving Car Engineer Nanodegree Program
 

@@ -1,0 +1,52 @@
+sudo: required
+
+language: cpp
+# As of 2017-07-18, Ubuntu Trusty 14.04 LTS is default travis environment.
+# Xenial 16.04 LTS isn't supported yet as of March 2018 :(
+#dist: xenial
+
+# "JSON for Modern C++" Only support gcc 4.9+, Trusty ships with gcc-4.8
+# CXX and CC env vars will point to g++/gcc and clang++/clang
+#compiler:
+#  - clang
+#  - gcc
+
+script:
+  - ./install-ubuntu-trusty.sh
+  - ./build.sh
+
+matrix:
+  include:
+    # Use gcc 5.x just like Ubuntu Xenial (and README says 5.4+ required)
+    # works on Ubuntu Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+
+    # Use clang 3.8 just like xenial
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+          packages:
+            - clang-3.8
+      env:
+        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
+
+    # Make sure macOS / OS X works as well
+    # Pick from https://docs.travis-ci.com/user/reference/osx/#OS-X-Version
+    # TODO use ./install-mac.sh script instead for macOS/OS X build
+    #- os: osx
+    #  osx_image: xcode9.2
+
+
+before_install:
+    - eval "${MATRIX_EVAL}"
