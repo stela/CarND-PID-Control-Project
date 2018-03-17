@@ -9,13 +9,13 @@ PID::PID() {}
 
 PID::~PID() {}
 
-void PID::Init(double Kp, double Ki, double Kd) {
+void PID::Init(const double Kp, const double Ki, const double Kd) {
   this->Kp = Kp;
   this->Ki = Ki;
   this->Kd = Kd;
 }
 
-void PID::UpdateError(double cte) {
+void PID::UpdateError(const double cte) {
   const auto previous_cte = p_error;
   p_error = cte;
   // {i,d}_error adjustments should ideally be multiplied by delta-time, especially if updates not received with predictable intervals
@@ -25,12 +25,12 @@ void PID::UpdateError(double cte) {
 
 double PID::TotalError() {
   // assuming the K-factors are positive, sum of products is the error
-  return Kp * p_error + Ki * i_error + Kd + d_error;
+  return Kp * p_error + Ki * i_error + Kd * d_error;
 }
 
 double PID::steer_value() {
   // Steer the opposite of the error
-  double steer = TotalError();
+  double steer = -TotalError();
   if (steer < -1.0) {
     return -1.0;
   }
