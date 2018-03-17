@@ -24,7 +24,7 @@ double PID::TotalError() const {
   return Kp * p_error + Ki * i_error + Kd * d_error;
 }
 
-double PID::steer_value() const {
+double PID::SteerValue() const {
   // Steer the opposite of the error
   double steer = -TotalError();
   if (steer < -1.0) {

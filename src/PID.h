@@ -46,7 +46,7 @@ public:
    * Returns the steering angle.
    * @return
    */
-  double steer_value() const;
+  double SteerValue() const;
 };
 
 #endif /* PID_H */

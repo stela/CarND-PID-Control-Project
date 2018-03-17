@@ -14,12 +14,13 @@
 // Kp = 0.6 Ku = 0.06
 // Ki = 1.2 Ku / Tu = 0.00043
 // Kd = 3 Ku Tu / 40 = 1.2
-// That passed the whole track but with wheels on/close to the curb too much to feel safe,
-// was a bit too "soft" though in long curves. Which means Kp and Ki could be increased a bit.
-// Manual adjustments then result in:
+// That passed the whole track with throttle=0.3,
+// but with wheels on/close to the curb too much to feel safe.
+// It was a bit too "soft" at long curves, which means Kp and Ki could be increased a bit.
+// Manual tuning then resulted in:
 // Kp = 0.1
 // Ki = 0.0008
-// Kd = 2.0
+// Kd = 3.0
 //
 // Then tuned Kd, added dynamic throttling, 0.2 is fine at curves or when off-centre,
 // but where steering around 0 and in the middle of the road, throttle 0.9 is fine
@@ -31,6 +32,8 @@ constexpr double KdInit = 3.0;
 constexpr bool debug = false;
 
 // for convenience
+double throttle();
+
 using json = nlohmann::json;
 
 // For converting back and forth between radians and degrees.
@@ -52,6 +55,15 @@ std::string hasData(const std::string &s) {
     return s.substr(b1, b2 - b1 + 1);
   }
   return "";
+}
+
+static double calc_throttle(const double steer_value, const double cte) {
+  const bool danger = fabs(steer_value) > 0.1 || fabs(cte) > 0.5;
+  if (danger) {
+    return 0.2;
+  } else {
+    return 0.9;
+  }
 }
 
 int main()
@@ -78,7 +90,7 @@ int main()
           const double angle = std::stod(j[1]["steering_angle"].get<std::string>());
 
           pid.UpdateError(cte);
-          const double steer_value = pid.steer_value();
+          const double steer_value = pid.SteerValue();
 
           if (debug) {
             std::cout << "CTE: " << cte
@@ -93,13 +105,7 @@ int main()
 
           // Throttle control, if curvy or off-center, slow down,
           // otherwise give lots of gas >8-D
-          double throttle;
-          // abs(cte) = 1.6 near the curb/edge of road
-          if (fabs(steer_value) > 0.1 || fabs(cte) > 0.5) {
-            throttle = 0.2;
-          } else {
-            throttle = 0.9;
-          }
+          double throttle = calc_throttle(steer_value, cte);
           msgJson["throttle"] = throttle;
 
           // Control the car
