@@ -12,7 +12,7 @@ See build instructions in [the original README](README-original.md#basic-build-i
 
 ## PID algorithm implementation
 
-The PID algorithm implementation follows the structure taught in the lessons. [PID::TotalError()](blob/master/src/PID.cpp#L22-L25) calculates the error (control output). [PID::SteerValue()](blob/master/src/PID.cpp#L27-L37) calculates the actual steering output based on the error, making sure the output is clamped between -1 and +1.
+The PID algorithm implementation follows the structure taught in the lessons. [PID::TotalError()](src/PID.cpp#L22-L25) calculates the error (control output). [PID::SteerValue()](src/PID.cpp#L27-L37) calculates the actual steering output based on the error, making sure the output is clamped between -1 and +1.
 
 ## Effect of P, I and D components
 The P component makes sure the car steers towards the center of the street. While doing so, it easily results in oscillations and overshoot, worse the larger the P value.
@@ -40,6 +40,6 @@ That made the whole track on first attempt with throttle=0.3, but with wheels on
 | ---:| ---: | ---: |
 | 0.1 | 0.0008 | 3.0 |
 
-Driving with constant throttle of 0.3 felt a bit boring, so instead I created a function [calc_throttle()](blob/master/src/main.cpp#L60-L67) which gives throttle 0.2 when the car is off-center or steers left/right sharply, and otherwise gives plenty gas, 0.9, when the car is well centered and driving straight. This allows the car to reach speeds of 75 Mph on straight pieces of road, while driving slower and safer at curvy parts.
+Driving with constant throttle of 0.3 felt a bit boring, so instead I created a function [calc_throttle()](src/main.cpp#L60-L67) which gives throttle 0.2 when the car is off-center or steers left/right sharply, and otherwise gives plenty gas, 0.9, when the car is well centered and driving straight. This allows the car to reach speeds of 75 Mph on straight pieces of road, while driving slower and safer at curvy parts.
 
 The behaviour of the PID regulator seemed to depend on how much debug output was written to the console, I think control could be more consistent if wall-clock was measured instead of using one time unit per simulator measurement received.
