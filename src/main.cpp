@@ -6,9 +6,10 @@
 #include <cmath>
 
 // PID regulator initial constants
-constexpr double KpInit = -0.3;
-constexpr double KiInit = -0.1;
-constexpr double KdInit = -0.1;
+// TODO: Tune the pid constants.
+constexpr double KpInit = 0.2;
+constexpr double KiInit = 0.00;
+constexpr double KdInit = 0.0;
 
 // for convenience
 using json = nlohmann::json;
@@ -39,7 +40,6 @@ int main()
   uWS::Hub h;
 
   PID pid;
-  // TODO: Initialize the pid variable.
   pid.Init(KpInit, KiInit, KdInit);
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
@@ -54,22 +54,23 @@ int main()
         std::string event = j[0].get<std::string>();
         if (event == "telemetry") {
           // j[1] is the data JSON object
-          double cte = std::stod(j[1]["cte"].get<std::string>());
-          double speed = std::stod(j[1]["speed"].get<std::string>());
-          double angle = std::stod(j[1]["steering_angle"].get<std::string>());
-          double steer_value;
-          /*
-          * TODO: Calculate steering value here, remember the steering value is
-          * [-1, 1].
-          * NOTE: Feel free to play around with the throttle and speed. Maybe use
-          * another PID controller to control the speed!
-          */
-          
+          const double cte = std::stod(j[1]["cte"].get<std::string>());
+          const double speed = std::stod(j[1]["speed"].get<std::string>());
+          const double angle = std::stod(j[1]["steering_angle"].get<std::string>());
+
+          pid.UpdateError(cte);
+          const double steer_value = pid.steer_value();
+
           // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+          std::cout << "CTE: " << cte
+                    << " PID Total error: " << pid.TotalError()
+                    << " P I D-errors: " << pid.p_error << ", " << pid.i_error << ", " << pid.d_error
+                    << " Steering Value: " << steer_value
+                    << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
+          // TODO control throttle better
           msgJson["throttle"] = 0.3;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;
