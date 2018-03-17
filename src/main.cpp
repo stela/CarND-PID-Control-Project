@@ -1,8 +1,14 @@
+#define _USE_MATH_DEFINES
 #include <uWS/uWS.h>
 #include <iostream>
 #include "json.hpp"
 #include "PID.h"
 #include <cmath>
+
+// PID regulator initial constants
+constexpr double KpInit = 1.0;
+constexpr double KiInit = 0.1;
+constexpr double KdInit = 1.0;
 
 // for convenience
 using json = nlohmann::json;
@@ -34,6 +40,7 @@ int main()
 
   PID pid;
   // TODO: Initialize the pid variable.
+  pid.Init(KpInit, KiInit, KdInit);
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
