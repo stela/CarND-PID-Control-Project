@@ -20,9 +20,15 @@
 // Kp = 0.1
 // Ki = 0.0008
 // Kd = 2.0
+//
+// Then tuned Kd, added dynamic throttling, 0.2 is fine at curves or when off-centre,
+// but where steering around 0 and in the middle of the road, throttle 0.9 is fine
+
 constexpr double KpInit = 0.1;
 constexpr double KiInit = 0.0008;
-constexpr double KdInit = 2.0;
+constexpr double KdInit = 3.0;
+
+constexpr bool debug = false;
 
 // for convenience
 using json = nlohmann::json;
@@ -74,19 +80,33 @@ int main()
           pid.UpdateError(cte);
           const double steer_value = pid.steer_value();
 
-          // DEBUG
-          std::cout << "CTE: " << cte
-                    << " PID Total error: " << pid.TotalError()
-                    << " P I D-errors: " << pid.p_error << ", " << pid.i_error << ", " << pid.d_error
-                    << " Steering Value: " << steer_value
-                    << std::endl;
+          if (debug) {
+            std::cout << "CTE: " << cte
+                      << " PID Total error: " << pid.TotalError()
+                      << " P I D-errors: " << pid.p_error << ", " << pid.i_error << ", " << pid.d_error
+                      << " Steering Value: " << steer_value
+                      << std::endl;
+          }
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
-          // TODO control throttle better
-          msgJson["throttle"] = 0.3;
+
+          // Throttle control, if curvy or off-center, slow down,
+          // otherwise give lots of gas >8-D
+          double throttle;
+          // abs(cte) = 1.6 near the curb/edge of road
+          if (fabs(steer_value) > 0.1 || fabs(cte) > 0.5) {
+            throttle = 0.2;
+          } else {
+            throttle = 0.9;
+          }
+          msgJson["throttle"] = throttle;
+
+          // Control the car
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          std::cout << msg << std::endl;
+          if (debug) {
+            std::cout << msg << std::endl;
+          }
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {
