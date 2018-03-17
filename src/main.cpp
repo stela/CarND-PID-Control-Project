@@ -6,9 +6,9 @@
 #include <cmath>
 
 // PID regulator initial constants
-constexpr double KpInit = 1.0;
-constexpr double KiInit = 0.1;
-constexpr double KdInit = 1.0;
+constexpr double KpInit = -0.3;
+constexpr double KiInit = -0.1;
+constexpr double KdInit = -0.1;
 
 // for convenience
 using json = nlohmann::json;
