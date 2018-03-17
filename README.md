@@ -43,3 +43,7 @@ That made the whole track on first attempt with throttle=0.3, but with wheels on
 Driving with constant throttle of 0.3 felt a bit boring, so instead I created a function [calc_throttle()](src/main.cpp#L60-L67) which gives throttle 0.2 when the car is off-center or steers left/right sharply, and otherwise gives plenty gas, 0.9, when the car is well centered and driving straight. This allows the car to reach speeds of 75 Mph on straight pieces of road, while driving slower and safer at curvy parts.
 
 The behaviour of the PID regulator seemed to depend on how much debug output was written to the console, I think control could be more consistent if wall-clock was measured instead of using one time unit per simulator measurement received.
+
+## Sample Video
+
+Look at the [sample video](https://youtu.be/Z2Yu7rt9gNg) showing the car completing the track safely.
