@@ -6,10 +6,23 @@
 #include <cmath>
 
 // PID regulator initial constants
-// TODO: Tune the pid constants.
-constexpr double KpInit = 0.2;
-constexpr double KiInit = 0.00;
-constexpr double KdInit = 0.0;
+// Tuning by Ziegler-Nichols method gives,
+// see https://en.wikipedia.org/wiki/PID_controller#Ziegler%E2%80%93Nichols_method
+// P=0.2 : oscillates a bit, 0.1 less, 0,05 barely => Ku=0.1
+// Each oscillation is about 280 entries => Tu=280
+// Gives these PID parameters:
+// Kp = 0.6 Ku = 0.06
+// Ki = 1.2 Ku / Tu = 0.00043
+// Kd = 3 Ku Tu / 40 = 1.2
+// That passed the whole track but with wheels on/close to the curb too much to feel safe,
+// was a bit too "soft" though in long curves. Which means Kp and Ki could be increased a bit.
+// Manual adjustments then result in:
+// Kp = 0.1
+// Ki = 0.0008
+// Kd = 2.0
+constexpr double KpInit = 0.1;
+constexpr double KiInit = 0.0008;
+constexpr double KdInit = 2.0;
 
 // for convenience
 using json = nlohmann::json;

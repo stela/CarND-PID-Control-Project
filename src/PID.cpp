@@ -1,13 +1,8 @@
 #include "PID.h"
 
+PID::PID() = default;
 
-/*
-* TODO: Complete the PID class.
-*/
-
-PID::PID() {}
-
-PID::~PID() {}
+PID::~PID() = default;
 
 void PID::Init(const double Kp, const double Ki, const double Kd) {
   this->Kp = Kp;
@@ -18,17 +13,18 @@ void PID::Init(const double Kp, const double Ki, const double Kd) {
 void PID::UpdateError(const double cte) {
   const auto previous_cte = p_error;
   p_error = cte;
-  // {i,d}_error adjustments should ideally be multiplied by delta-time, especially if updates not received with predictable intervals
+  // {i,d}_error adjustments should ideally be multiplied by delta-time,
+  // especially if updates not received in consistent intervals
   i_error += cte;
   d_error = cte - previous_cte;
 }
 
-double PID::TotalError() {
+double PID::TotalError() const {
   // assuming the K-factors are positive, sum of products is the error
   return Kp * p_error + Ki * i_error + Kd * d_error;
 }
 
-double PID::steer_value() {
+double PID::steer_value() const {
   // Steer the opposite of the error
   double steer = -TotalError();
   if (steer < -1.0) {

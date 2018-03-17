@@ -40,13 +40,13 @@ public:
   /**
   * Calculate the total PID error.
   */
-  double TotalError();
+  double TotalError() const;
 
   /**
    * Returns the steering angle.
    * @return
    */
-  double steer_value();
+  double steer_value() const;
 };
 
 #endif /* PID_H */
